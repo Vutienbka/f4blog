@@ -1,72 +1,41 @@
-<div class="page-header" data-parallax="true" style="background-image: url('./assets/img/daniel-olahh.jpg');">
-    <div class="filter"></div>
-    <div class="container">
-        <div class="motto text-center">
-            <h1 class="presentation-title">F4 Blogger</h1>
-            <br>
-            <h2 class="text-center">Chào mừng bạn đến với trang web của chúng tôi</h2>
-            <br/>
-            <br>
-        </div>
-    </div>
-</div>
 
-<div class="main">
-    <div class="text-center">
+<div class="wrapper">
+    <div class="page-header" style="background-image: url('./assets/img/login-image.jpg');">
         <div class="container">
-            <div class="row">
-                <div class="col-md-8 mr-auto ml-auto">
-                    <h1 class="title">Create Blog</h1>
-                    <!--                    <a [routerLink]="['/aboutme']" class="btn btn-danger btn-round">Create New Blog</a>-->
-                </div>
-            </div>
-            <br/><br/>
-            <hr color="zed">
-
-
-            <form class="col-8">
+            <h3 style="color: white">Add New Post</h3>
+            <form class="form-horizontal" [formGroup]="postForm" id="postForm">
                 <div class="form-group">
-                    <h4 for="exampleFormControlInput1">Title</h4>
-                    <br>
-                    <input type="text" class="form-control" id="title"
-                           placeholder="nhập title" [(ngModel)]="title">
-                </div>
-                <br>
-                <div class="form-group">
-                    <h4 for="exampleFormControlSelect1">PublishedStatus</h4>
-                    <br>
-                    <select class="form-control" id="publishedStatus" [(ngModel)]="publishedStatus">
-                        <option>0</option>
-                        <option>1</option>
-                    </select>
-                </div>
-                <br>
-                <div class="form-group">
-                    <h4 for="exampleFormControlInput1">PublishTime</h4>
-                    <br>
-                    <input type="date" class="form-control" id="publishTime" [(ngModel)]="publishTime">
-                </div>
-                <br>
-                <form>
-                    <div class="form-group">
-                        <h4 for="media">Media</h4>
-                        <br>
-                        <input type="file" class="form-control-file" id="media">
+                    <div class="col-sm-12">
+                        <label for="title" class="control-label required" style="color: white; font-size: 17px">Title</label>
+                        <input id="title" type="text" class="form-control" formControlName="title">
                     </div>
-                </form>
-                <div class="form-group">
-                    <h4 for="exampleFormControlTextarea1">Content</h4>
-                    <br>
-                    <textarea class="form-control" id="content" rows="3" [(ngModel)]="content"></textarea>
                 </div>
 
-                <br>
-                <br>
-                <a [routerLink]="['/createPost']" class="btn btn-danger btn-round" (click)="createPost()">Create Blog</a>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <label  class="control-label required" style="color: white; font-size: 17px">Content</label>
+                        <ckeditor [editor]="Editor" (change)="saveContentOfPost($event)" formControlName="content" ></ckeditor>
+<!--                        <textarea id="content" class="form-control" formControlName="content" style="height: 300px">-->
+<!--                Enter text here...</textarea>-->
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <label for="file" class="control-label" style="color: white; font-size: 17px">Choose Image</label>
+                        <input id="file" type="file" multiple accept="image/*" class="form-control" (change)="onSelectFile($event)" >
+                    </div>
+                </div>
+
+                <div *ngIf="fileUrl">
+                    <img src="{{this.fileUrl}}" style="width: 100px; height: 100px">
+                </div>
+                <button class="btn btn-primary" (click)="onSubmit(postForm)">Submit</button>
+                <button class="btn" (click)="reset()">Reset</button>
             </form>
-            <br>
-            <br><br>
-            <br>
         </div>
     </div>
+
 </div>
+
+

@@ -4,7 +4,6 @@ import com.codegym.Model.UserEntity;
 import com.codegym.Model.UserJwt;
 import com.codegym.Service.IUserService;
 import com.codegym.Service.impl.JwtService;
-import javafx.print.Collation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;

@@ -70,4 +70,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.cors();
     }
+
+
 }

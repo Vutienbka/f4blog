@@ -56,6 +56,11 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public UserEntity findById(Long id) {
+        return userRepo.findOne(id);
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
         UserEntity userEntity = this.findByUserName(userName);
         if (userEntity == null) {

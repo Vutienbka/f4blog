@@ -22,4 +22,7 @@ public class UserRepo implements IUserRepoHQL {
         }catch(NoResultException n) {
             return null;}
     }
+
+
+
 }

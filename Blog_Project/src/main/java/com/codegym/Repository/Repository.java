@@ -1,5 +1,7 @@
 package com.codegym.Repository;
 
+import com.codegym.Model.PostEntity;
+
 import java.util.List;
 
 public interface Repository <T> {

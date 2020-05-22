@@ -1,6 +1,7 @@
 package com.codegym.Service;
 
 import com.codegym.Model.PostEntity;
+import com.codegym.Repository.PostRepository;
 
 import java.util.List;
 
@@ -9,7 +10,7 @@ public interface PostService  {
 
     PostEntity findById(Long id);
 
-    void save(PostEntity postEntity);
+    PostEntity save(PostEntity postEntity);
 
     void remove(Long id);
 

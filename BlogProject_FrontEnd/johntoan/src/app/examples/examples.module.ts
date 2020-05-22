@@ -13,14 +13,15 @@ import { IndexUserComponent } from './index-user/index-user.component';
 import { AboutmeComponent } from './aboutme/aboutme.component';
 import {HttpClientModule} from "@angular/common/http";
 import { CreatePostComponent } from './create-post/create-post.component';
+import {CKEditorModule} from "@ckeditor/ckeditor5-angular";
 
 @NgModule({
     imports: [
         CommonModule,
-        FormsModule,ReactiveFormsModule,
+        FormsModule, ReactiveFormsModule,
         NgbModule,
         RouterModule,
-        HttpClientModule
+        HttpClientModule, CKEditorModule
     ],
     declarations: [
         LandingComponent,

@@ -6,18 +6,29 @@ import javax.persistence.*;
 @Entity
 @Table(name = "media", schema = "project")
 public class MediaEntity {
-    private long id;
+    private Long id;
     private String srcMedia;
+    private String mediaName;
+    private String mediaType;
     private UserEntity userByUserId;
+
+    public MediaEntity() {
+    }
+
+    public MediaEntity(String srcMedia, String mediaName, String mediaType, UserEntity userByUserId) {
+        this.srcMedia = srcMedia;
+        this.mediaName = mediaName;
+        this.mediaType = mediaType;
+        this.userByUserId = userByUserId;
+    }
 
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public long getId() {
+    public Long getId() {
         return id;
     }
-
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -41,4 +52,21 @@ public class MediaEntity {
         this.userByUserId = userByUserId;
     }
 
+    @Column(name = "mediaName")
+    public String getMediaName() {
+        return mediaName;
+    }
+
+    public void setMediaName(String mediaName) {
+        this.mediaName = mediaName;
+    }
+
+    @Column(name = "mediaType")
+    public String getMediaType() {
+        return mediaType;
+    }
+
+    public void setMediaType(String mediaType) {
+        this.mediaType = mediaType;
+    }
 }

@@ -5,16 +5,16 @@ import {PostLikes} from './PostLikes';
 import {TagEntity} from './TagEntity';
 
 export interface Post {
-    id: number,
+    id?: number,
     title: string,
-    publishedStatus: boolean,
-    publishTime: number,
-    createdAt: number,
-    updatedAt: number,
-    content: string,
-    commentsById: CommentPost[],
-    userByUserId: UserPost,
-    categoryEntityList: CategoryEntity[],
-    tagEntityList: TagEntity[],
-    postLikesById: PostLikes[]
+    publishedStatus?: boolean,
+    publishTime?: number,
+    createdAt?: number,
+    updatedAt?: number,
+    content?: string,
+    commentsById?: CommentPost[],
+    userByUserId?: UserPost,
+    categoryEntityList?: CategoryEntity[],
+    tagEntityList?: TagEntity[],
+    postLikesById?: PostLikes[]
 }

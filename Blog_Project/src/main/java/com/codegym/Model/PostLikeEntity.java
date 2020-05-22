@@ -11,6 +11,7 @@ public class PostLikeEntity {
     private PostEntity postByPostId;
     private UserEntity userByUserId;
 
+
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)

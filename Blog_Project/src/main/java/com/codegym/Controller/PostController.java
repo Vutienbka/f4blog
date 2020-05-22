@@ -1,32 +1,49 @@
 package com.codegym.Controller;
 
+import com.codegym.Model.MediaEntity;
 import com.codegym.Model.PostEntity;
+import com.codegym.Model.Response;
+import com.codegym.Model.UserEntity;
+import com.codegym.Service.IMediaService;
+import com.codegym.Service.IUserService;
 import com.codegym.Service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.multipart.MultipartFile;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @CrossOrigin("*")
 @RestController
 public class PostController {
 
+    @Autowired
+    IUserService userService;
+    @Autowired
+    PostService postService;
+    @Autowired
+    IMediaService mediaService;
+    @Autowired
+    Environment environment;
+
     //--------------------------TOAN----------------------
 
     //--------------------------TIEN----------------------
-
-    //--------------------------TU----------------------
-
-    //--------------------------DUNG----------------------
-    @Autowired
-    private PostService postService;
-
-    //-------------------Retrieve All
-    @RequestMapping(value = "/posts/", method = RequestMethod.GET)
+    @RequestMapping(value = "/getAllPosts/", method = RequestMethod.GET)
     public ResponseEntity<List<PostEntity>> listAllPosts() {
         List<PostEntity> postEntities = postService.findAll();
         if (postEntities.isEmpty()) {
@@ -35,70 +52,148 @@ public class PostController {
         return new ResponseEntity<List<PostEntity>>(postEntities, HttpStatus.OK);
     }
 
-    //-------------------Retrieve Single
-    @RequestMapping(value = "/posts/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<PostEntity> getPost(@PathVariable("id") long id) {
-        System.out.println("Fetching Post with id " + id);
-        PostEntity postEntity = postService.findById(id);
-        if (postEntity == null) {
-            System.out.println("Post with id " + id + " not found");
-            return new ResponseEntity<PostEntity>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<PostEntity>(postEntity, HttpStatus.OK);
-    }
-
-    //-------------------Create
-    @RequestMapping(value = "/posts/", method = RequestMethod.POST)
-    public ResponseEntity<Void> createPost(@RequestBody PostEntity postEntity, UriComponentsBuilder ucBuilder) {
-        System.out.println("Creating Post " + postEntity.getTitle());
-        postService.save(postEntity);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(ucBuilder.path("/posts/{id}").buildAndExpand(postEntity.getId()).toUri());
-        return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
-    }
-
-    //------------------- Update
-    @RequestMapping(value = "/posts/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<PostEntity> updatePost(@PathVariable("id") Long id, @RequestBody PostEntity postEntity) {
-        System.out.println("Updating Post " + id);
-
-        PostEntity currentPostEntity = postService.findById(id);
-
-        if (currentPostEntity == null) {
-            System.out.println("Post with id " + id + " not found");
-            return new ResponseEntity<PostEntity>(HttpStatus.NOT_FOUND);
+    @PostMapping(value = "/savePost", consumes = "multipart/form-data")
+    @ResponseBody
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Response> addPost(@RequestPart("file[]") MultipartFile[] file, @ModelAttribute PostEntity post) {
+        try {
+            if (file != null) {
+                for(int i = 0; i<file.length;i++)
+                    System.out.println(file[i].getOriginalFilename());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        currentPostEntity.setId(postEntity.getId());
-        currentPostEntity.setTitle(postEntity.getTitle());
-        currentPostEntity.setPublishedStatus(postEntity.getPublishedStatus());
-        currentPostEntity.setPublishTime(postEntity.getPublishTime());
-        currentPostEntity.setCreatedAt(postEntity.getCreatedAt());
-        currentPostEntity.setUpdatedAt(postEntity.getUpdatedAt());
-        currentPostEntity.setContent(postEntity.getContent());
-        currentPostEntity.setCommentsById(postEntity.getCommentsById());
-        currentPostEntity.setUserByUserId(postEntity.getUserByUserId());
-        currentPostEntity.setCategoryEntityList(postEntity.getCategoryEntityList());
-        currentPostEntity.setTagEntityList(postEntity.getTagEntityList());
-        currentPostEntity.setPostLikesById(postEntity.getPostLikesById());
+        Long userId = 1L;
+        UserEntity user = userService.findById(userId);
+        user.setCommentsById(null);
+        user.setMediaById(null);
+        user.setPostsById(null);
+        user.setPostLikesById(null);
 
-        postService.save(currentPostEntity);
-        return new ResponseEntity<PostEntity>(currentPostEntity, HttpStatus.OK);
-    }
+        if(user !=null) {
+            Date currentDate = new Date();
+            Timestamp currentTime = new Timestamp(currentDate.getTime());
+            post.setCreatedAt(currentTime);
+            PostEntity newPost = new PostEntity(post.getTitle(),post.getCreatedAt(),post.getContent(),user);
+            try {
+                postService.save(newPost);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
 
-    //------------------- Delete
-    @RequestMapping(value = "/posts/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<PostEntity> deletePost(@PathVariable("id") Long id) {
-        System.out.println("Fetching & Deleting Post with id " + id);
+            List<MediaEntity> mediaList = new ArrayList<>();
+            for (int i = 0; i < file.length; i++) {
+                String fileUpload = environment.getProperty("file_upload").toString();
 
-        PostEntity postEntity = postService.findById(id);
-        if (postEntity == null) {
-            System.out.println("Unable to delete. Post with id " + id + " not found");
-            return new ResponseEntity<PostEntity>(HttpStatus.NOT_FOUND);
+                String mediaName = file[i].getOriginalFilename();
+                String mediaType = file[i].getContentType();
+                String srcMedia = fileUpload + mediaName;
+                MediaEntity newMedia = new MediaEntity(srcMedia, mediaType, mediaName, user);
+                try {
+                    mediaService.save(newMedia);
+                    MediaEntity media = mediaService.findById(newMedia.getId());
+                    mediaList.add(media);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                // Luu file len server
+                try {
+                    FileCopyUtils.copy(file[i].getBytes(), new File(fileUpload + mediaName));
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            if (newPost != null && (mediaList.size() == file.length)) {
+                return new ResponseEntity<Response>(new Response("Post saved successfully"), HttpStatus.OK);
+            } else
+                return new ResponseEntity<Response>(new Response("Post not saved"), HttpStatus.BAD_REQUEST);
+        }else {
+            return  new ResponseEntity<Response>(new Response("Not found user for add Post"), HttpStatus.BAD_REQUEST);
         }
 
-        postService.remove(id);
-        return new ResponseEntity<PostEntity>(HttpStatus.NO_CONTENT);
     }
+
+    //--------------------------TU----------------------
+
+    //--------------------------DUNG----------------------
+
+
+    //-------------------Retrieve all
+//    @RequestMapping(value = "/getAllPosts/", method = RequestMethod.GET)
+//    public ResponseEntity<List<PostEntity>> listAllPosts() {
+//        List<PostEntity> postEntities = postService.findAll();
+//        if (postEntities.isEmpty()) {
+//            return new ResponseEntity<List<PostEntity>>(HttpStatus.NO_CONTENT);//You many decide to return HttpStatus.NOT_FOUND
+//        }
+//        return new ResponseEntity<List<PostEntity>>(postEntities, HttpStatus.OK);
+//    }
+
+//    //-------------------Retrieve Single
+//    @RequestMapping(value = "/posts/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+//    public ResponseEntity<PostEntity> getPost(@PathVariable("id") long id) {
+//        System.out.println("Fetching Post with id " + id);
+//        PostEntity postEntity = postService.findById(id);
+//        if (postEntity == null) {
+//            System.out.println("Post with id " + id + " not found");
+//            return new ResponseEntity<PostEntity>(HttpStatus.NOT_FOUND);
+//        }
+//        return new ResponseEntity<PostEntity>(postEntity, HttpStatus.OK);
+//    }
+//
+//    //-------------------Create
+//    @RequestMapping(value = "/posts/", method = RequestMethod.POST)
+//    public ResponseEntity<Void> createPost(@RequestBody PostEntity postEntity, UriComponentsBuilder ucBuilder) {
+//        System.out.println("Creating Post " + postEntity.getTitle());
+//        postService.save(postEntity);
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setLocation(ucBuilder.path("/posts/{id}").buildAndExpand(postEntity.getId()).toUri());
+//        return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
+//    }
+//
+//    //------------------- Update
+//    @RequestMapping(value = "/posts/{id}", method = RequestMethod.PUT)
+//    public ResponseEntity<PostEntity> updatePost(@PathVariable("id") Long id, @RequestBody PostEntity postEntity) {
+//        System.out.println("Updating Post " + id);
+//
+//        PostEntity currentPostEntity = postService.findById(id);
+//
+//        if (currentPostEntity == null) {
+//            System.out.println("Post with id " + id + " not found");
+//            return new ResponseEntity<PostEntity>(HttpStatus.NOT_FOUND);
+//        }
+//
+//        currentPostEntity.setId(postEntity.getId());
+//        currentPostEntity.setTitle(postEntity.getTitle());
+//        currentPostEntity.setPublishedStatus(postEntity.getPublishedStatus());
+//        currentPostEntity.setPublishTime(postEntity.getPublishTime());
+//        currentPostEntity.setCreatedAt(postEntity.getCreatedAt());
+//        currentPostEntity.setUpdatedAt(postEntity.getUpdatedAt());
+//        currentPostEntity.setContent(postEntity.getContent());
+//        currentPostEntity.setCommentsById(postEntity.getCommentsById());
+//        currentPostEntity.setUserByUserId(postEntity.getUserByUserId());
+//        currentPostEntity.setCategoryEntityList(postEntity.getCategoryEntityList());
+//        currentPostEntity.setTagEntityList(postEntity.getTagEntityList());
+//        currentPostEntity.setPostLikesById(postEntity.getPostLikesById());
+//
+//        postService.save(currentPostEntity);
+//        return new ResponseEntity<PostEntity>(currentPostEntity, HttpStatus.OK);
+//    }
+//
+//    //------------------- Delete
+//    @RequestMapping(value = "/posts/{id}", method = RequestMethod.DELETE)
+//    public ResponseEntity<PostEntity> deletePost(@PathVariable("id") Long id) {
+//        System.out.println("Fetching & Deleting Post with id " + id);
+//
+//        PostEntity postEntity = postService.findById(id);
+//        if (postEntity == null) {
+//            System.out.println("Unable to delete. Post with id " + id + " not found");
+//            return new ResponseEntity<PostEntity>(HttpStatus.NOT_FOUND);
+//        }
+//
+//        postService.remove(id);
+//        return new ResponseEntity<PostEntity>(HttpStatus.NO_CONTENT);
+//    }
 
 }

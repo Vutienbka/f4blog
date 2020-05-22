@@ -1,11 +1,15 @@
 package com.codegym.WebAppConfig;
 
+import com.codegym.Repository.IMediaRepository;
 import com.codegym.Repository.IUserRepoHQL;
 import com.codegym.Repository.PostRepository;
+import com.codegym.Repository.impl.MediaRepositoryImpl;
 import com.codegym.Repository.impl.PostRepositoryImpl;
 import com.codegym.Repository.impl.UserRepo;
+import com.codegym.Service.IMediaService;
 import com.codegym.Service.IUserService;
 import com.codegym.Service.PostService;
+import com.codegym.Service.impl.MediaService;
 import com.codegym.Service.impl.PostServiceImpl;
 import com.codegym.Service.impl.UserService;
 import org.springframework.beans.BeansException;
@@ -17,6 +21,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -29,9 +34,14 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
@@ -48,17 +58,7 @@ import javax.sql.DataSource;
 import java.util.Locale;
 import java.util.Properties;
 
-//<<<<<<< HEAD
-//
-//=======
-//import com.codegym.repository.PostRepository;
-//
-//import com.codegym.repository.impl.PostRepositoryImpl;
-//
-//import com.codegym.service.PostService;
-//
-//import com.codegym.service.impl.PostServiceImpl;
-//>>>>>>> 1bf85888c62d509e0284f92ba6d55a9faa3e29fbAn authentication system based on tokens (JWT or random) stored in cookies is vulnerable to CSRF attacks, because cookies are sent automatically to server in each request and an attacker could build a harmful url link to your site.
+
 @Configuration
 @EnableWebMvc
 @EnableTransactionManagement
@@ -66,6 +66,7 @@ import java.util.Properties;
 @ComponentScan(basePackages ="com.codegym")
 @EnableJpaRepositories("com.codegym.Repository")
 @EnableWebSecurity
+@PropertySource("classpath:file_resources.properties")
 public class WebAppConfig extends WebMvcConfigurerAdapter implements ApplicationContextAware {
 
     ApplicationContext applicationContext;
@@ -74,14 +75,25 @@ public class WebAppConfig extends WebMvcConfigurerAdapter implements Application
     Environment environment;
 
     @Bean
-    public PostRepository postRepository(){
-        return new PostRepositoryImpl();
+    public IMediaRepository mediaRepositoryRepository(){
+        return new MediaRepositoryImpl();
     }
+
+//    @Bean
+//    public PostRepository postRepository(){
+//        return new PostRepositoryImpl();
+//    }
 
     @Bean
     public PostService postService(){
         return new PostServiceImpl();
     }
+
+    @Bean
+    public IMediaService mediaServiceService(){
+        return new MediaService();
+    }
+
 
     @Bean
     public IUserRepoHQL userRepo() {
@@ -93,11 +105,12 @@ public class WebAppConfig extends WebMvcConfigurerAdapter implements Application
         this.applicationContext = applicationContext;
     }
 
-//    @Override
-//    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-//        registry.addResourceHandler("/JQuery/**")
-//                .addResourceLocations("file:/home/vutienbka/Downloads/CustomerManageJPARepository/src/main/resources/JQuery/");
-//    }
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        String fileUpload = environment.getProperty("file_upload").toString();
+        registry.addResourceHandler("/i/**")
+                .addResourceLocations("file:" + fileUpload);
+    }
 
     // ---------------------------------------------------------
     @Bean
@@ -121,7 +134,6 @@ public class WebAppConfig extends WebMvcConfigurerAdapter implements Application
         localeResolver.setDefaultLocale(new Locale("en"));
         return localeResolver;
     }
-
 
     //-----------------------------------------------------------
     @Bean
@@ -158,9 +170,9 @@ public class WebAppConfig extends WebMvcConfigurerAdapter implements Application
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-        dataSource.setUrl("Jdbc:mysql://52.187.177.166:3306/project1?useSSL=false&serverTimezone=UTC&useUnicode=yes&characterEncoding=UTF-8");
+        dataSource.setUrl("jdbc:mysql://localhost:3306/project1");
         dataSource.setUsername("root");
-        dataSource.setPassword("Maiyeuem89");
+        dataSource.setPassword("123456");
         return dataSource;
     }
 
@@ -168,7 +180,30 @@ public class WebAppConfig extends WebMvcConfigurerAdapter implements Application
     @Qualifier(value = "entityManager")
     public EntityManager entityManager(EntityManagerFactory entityManagerFactory) {
         return entityManagerFactory.createEntityManager();
-    }//package com.codegym.Service.impl;
+    }
+    @Bean(name = "multipartResolver")
+    public CommonsMultipartResolver getResolver(){
+        CommonsMultipartResolver commonsMultipartResolver = new CommonsMultipartResolver();
+        commonsMultipartResolver.setMaxUploadSizePerFile(5000000);
+        return commonsMultipartResolver;
+    }
+
+    @Bean
+    public CorsFilter corsFilter(){
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        final CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedHeader("*");
+        config.addAllowedOrigin("*");
+        config.addAllowedMethod("OPTIONS");
+        config.addAllowedMethod("GET");
+        config.addAllowedMethod("PUT");
+        config.addAllowedMethod("POST");
+        config.addAllowedMethod("DELETE");
+        source.registerCorsConfiguration("/**",config);
+        return new CorsFilter(source);
+    }
+    //package com.codegym.Service.impl;
 //
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
