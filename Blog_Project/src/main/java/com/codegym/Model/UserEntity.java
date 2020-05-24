@@ -22,7 +22,6 @@ public class UserEntity {
     private String srcAvatar;
     private List<CommentEntity> commentsById;
     private List<MediaEntity> mediaById;
-
     private List<PostEntity> postsById;
 
 
@@ -170,4 +169,6 @@ public class UserEntity {
     public void setPostLikesById(List<PostLikeEntity> postLikesById) {
         this.postLikesById = postLikesById;
     }
+
+
 }

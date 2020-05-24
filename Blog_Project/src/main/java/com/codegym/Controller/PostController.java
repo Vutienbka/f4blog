@@ -10,15 +10,11 @@ import com.codegym.Service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,14 +39,24 @@ public class PostController {
     //--------------------------TOAN----------------------
 
     //--------------------------TIEN----------------------
-    @RequestMapping(value = "/getAllPosts/", method = RequestMethod.GET)
+    @RequestMapping(value = "/getAllMedias", method = RequestMethod.GET)
+    public ResponseEntity<List<MediaEntity>> listAllMedias() {
+        List<MediaEntity> mediaEntities= mediaService.findAll();
+        if (mediaEntities.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(mediaEntities, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/getAllPosts", method = RequestMethod.GET)
     public ResponseEntity<List<PostEntity>> listAllPosts() {
         List<PostEntity> postEntities = postService.findAll();
         if (postEntities.isEmpty()) {
-            return new ResponseEntity<List<PostEntity>>(HttpStatus.NO_CONTENT);//You many decide to return HttpStatus.NOT_FOUND
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<List<PostEntity>>(postEntities, HttpStatus.OK);
+        return new ResponseEntity<>(postEntities, HttpStatus.OK);
     }
+
 
     @PostMapping(value = "/savePost", consumes = "multipart/form-data")
     @ResponseBody
@@ -89,7 +95,7 @@ public class PostController {
 
                 String mediaName = file[i].getOriginalFilename();
                 String mediaType = file[i].getContentType();
-                String srcMedia = fileUpload + mediaName;
+                String srcMedia = "./assets/ImageServer/" + mediaName;
                 MediaEntity newMedia = new MediaEntity(srcMedia, mediaType, mediaName, user);
                 try {
                     mediaService.save(newMedia);
@@ -113,6 +119,33 @@ public class PostController {
             return  new ResponseEntity<Response>(new Response("Not found user for add Post"), HttpStatus.BAD_REQUEST);
         }
 
+    }
+
+        //------------------- Update
+    @RequestMapping(value = "/updatePost/{id}", method = RequestMethod.POST,consumes = "multipart/form-data")
+    @ResponseBody
+    public ResponseEntity<PostEntity> updatePost(@PathVariable("id") Long postId, @RequestPart("file[]") MultipartFile[] file, @ModelAttribute PostEntity postEntity) {
+        System.out.println("Updating Post " + postId);
+
+        PostEntity currentPostEntity = postService.findById(postId);
+
+        if (currentPostEntity == null) {
+            System.out.println("Post with id " + postId + " not found");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Date currentDate = new Date();
+        Timestamp currentTime = new Timestamp(currentDate.getTime());
+        postEntity.setUpdatedAt(currentTime);
+
+        currentPostEntity.setId(postEntity.getId());
+        currentPostEntity.setTitle(postEntity.getTitle());
+        currentPostEntity.setPublishedStatus(postEntity.getPublishedStatus());
+        currentPostEntity.setPublishTime(postEntity.getPublishTime());
+        currentPostEntity.setUpdatedAt(postEntity.getUpdatedAt());
+        currentPostEntity.setContent(postEntity.getContent());
+
+        postService.save(currentPostEntity);
+        return new ResponseEntity<>(currentPostEntity, HttpStatus.OK);
     }
 
     //--------------------------TU----------------------
@@ -152,34 +185,7 @@ public class PostController {
 //        return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
 //    }
 //
-//    //------------------- Update
-//    @RequestMapping(value = "/posts/{id}", method = RequestMethod.PUT)
-//    public ResponseEntity<PostEntity> updatePost(@PathVariable("id") Long id, @RequestBody PostEntity postEntity) {
-//        System.out.println("Updating Post " + id);
-//
-//        PostEntity currentPostEntity = postService.findById(id);
-//
-//        if (currentPostEntity == null) {
-//            System.out.println("Post with id " + id + " not found");
-//            return new ResponseEntity<PostEntity>(HttpStatus.NOT_FOUND);
-//        }
-//
-//        currentPostEntity.setId(postEntity.getId());
-//        currentPostEntity.setTitle(postEntity.getTitle());
-//        currentPostEntity.setPublishedStatus(postEntity.getPublishedStatus());
-//        currentPostEntity.setPublishTime(postEntity.getPublishTime());
-//        currentPostEntity.setCreatedAt(postEntity.getCreatedAt());
-//        currentPostEntity.setUpdatedAt(postEntity.getUpdatedAt());
-//        currentPostEntity.setContent(postEntity.getContent());
-//        currentPostEntity.setCommentsById(postEntity.getCommentsById());
-//        currentPostEntity.setUserByUserId(postEntity.getUserByUserId());
-//        currentPostEntity.setCategoryEntityList(postEntity.getCategoryEntityList());
-//        currentPostEntity.setTagEntityList(postEntity.getTagEntityList());
-//        currentPostEntity.setPostLikesById(postEntity.getPostLikesById());
-//
-//        postService.save(currentPostEntity);
-//        return new ResponseEntity<PostEntity>(currentPostEntity, HttpStatus.OK);
-//    }
+
 //
 //    //------------------- Delete
 //    @RequestMapping(value = "/posts/{id}", method = RequestMethod.DELETE)

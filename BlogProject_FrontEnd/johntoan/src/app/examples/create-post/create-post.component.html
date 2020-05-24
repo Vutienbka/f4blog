@@ -14,10 +14,14 @@
                 <div class="form-group">
                     <div class="col-sm-12">
                         <label  class="control-label required" style="color: white; font-size: 17px">Content</label>
-                        <ckeditor [editor]="Editor" (change)="saveContentOfPost($event)" formControlName="content" ></ckeditor>
+                        <ckeditor id = "editor1"  [editor]="Editor"
+                                  (change)="saveContentOfPost($event)" formControlName="content" style="color: white">
+
+                        </ckeditor>
 <!--                        <textarea id="content" class="form-control" formControlName="content" style="height: 300px">-->
 <!--                Enter text here...</textarea>-->
                     </div>
+
                 </div>
 
                 <div class="form-group">

@@ -1,0 +1,48 @@
+
+<div class="wrapper">
+    <div class="page-header" style="background-image: url('./assets/img/login-image.jpg');">
+        <div class="container">
+            <h3 style="color: white">Edit Post</h3>
+            <form class="form-horizontal" [formGroup]="postForm" id="postForm">
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <label for="title" class="control-label required" style="color: white; font-size: 17px">Title</label>
+                        <input id="title" type="text" class="form-control" formControlName="title" [(ngModel)]="post.title">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <label  class="control-label required" style="color: white; font-size: 17px">Content</label>
+                        <ckeditor id = "editor1"  [editor]="Editor"
+                                  (change)="viewChangeOfPost($event)" formControlName="content" style="color: white"
+                        [(ngModel)]="post.content">
+
+                        </ckeditor>
+                        <!--                        <textarea id="content" class="form-control" formControlName="content" style="height: 300px">-->
+                        <!--                Enter text here...</textarea>-->
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <label for="file" class="control-label" style="color: white; font-size: 17px">Choose Image</label>
+                        <input id="file" type="file" multiple accept="image/*" class="form-control" (change)="onSelectFile($event)" >
+                    </div>
+                </div>
+
+                <div *ngIf="fileUrl">
+                    <img src="{{this.fileUrl}}" style="width: 100px; height: 100px">
+                </div>
+                <button class="btn btn-info btn-round" (click)="onSavePost(postForm)">Save Post</button>
+                <button class="btn btn btn-info btn-round"> Publish</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+or>

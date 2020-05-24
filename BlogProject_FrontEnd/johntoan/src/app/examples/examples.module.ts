@@ -14,6 +14,8 @@ import { AboutmeComponent } from './aboutme/aboutme.component';
 import {HttpClientModule} from "@angular/common/http";
 import { CreatePostComponent } from './create-post/create-post.component';
 import {CKEditorModule} from "@ckeditor/ckeditor5-angular";
+import { EditPostDirective } from './edit-post.directive';
+import { EditPostComponent } from './edit-post/edit-post.component';
 
 @NgModule({
     imports: [
@@ -31,7 +33,9 @@ import {CKEditorModule} from "@ckeditor/ckeditor5-angular";
         ShowblogComponent,
         IndexUserComponent,
         AboutmeComponent,
-        CreatePostComponent
+        CreatePostComponent,
+        EditPostDirective,
+        EditPostComponent
     ]
 })
 export class ExamplesModule { }

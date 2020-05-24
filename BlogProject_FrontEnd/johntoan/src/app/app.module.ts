@@ -14,6 +14,7 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {InterceptorService} from "./service/interceptor.service";
 import {PostService} from "./service/post.service";
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
+import {MediaService} from "./service/media.service";
 
 @NgModule({
     declarations: [
@@ -34,7 +35,7 @@ import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
         ReactiveFormsModule,
         CKEditorModule
     ],
-    providers: [{ provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true }, PostService],
+    providers: [{ provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true }, PostService,MediaService],
     bootstrap: [AppComponent]
 })
 export class AppModule {

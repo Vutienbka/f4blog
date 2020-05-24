@@ -4,6 +4,8 @@ import {PostService} from "../../service/post.service";
 import {Router} from "@angular/router";
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import {ChangeEvent} from "@ckeditor/ckeditor5-angular";
+import * as DecoupledEditor from '@ckeditor/ckeditor5-build-decoupled-document';
+
 
 @Component({
     selector: 'app-create-post',
@@ -11,7 +13,8 @@ import {ChangeEvent} from "@ckeditor/ckeditor5-angular";
     styleUrls: ['./create-post.component.css']
 })
 export class CreatePostComponent implements OnInit {
-    public Editor = ClassicEditor;
+    // public Editor = ClassicEditor;
+    public Editor = DecoupledEditor;
 
     postForm:any = FormGroup;
     selectedFiles: File[] = [];
@@ -26,6 +29,7 @@ export class CreatePostComponent implements OnInit {
             content: new FormControl('',[Validators.required])
         });
     }
+
     onSelectFile(event){
         this.selectedFiles = event.target.files;
         for (let i=0; i<this.selectedFiles.length ; i++){
@@ -54,9 +58,13 @@ export class CreatePostComponent implements OnInit {
 
     saveContentOfPost( { editor }: ChangeEvent ) {
         const data = editor.getData();
-
         this.postForm.controls.content.value= data;
         console.log( this.postForm.controls.content.value);
+
+        editor.ui.getEditableElement().parentElement.insertBefore(
+            editor.ui.view.toolbar.element,
+            editor.ui.getEditableElement()
+        );
     }
 
     reset(){}
@@ -122,7 +130,7 @@ export class CreatePostComponent implements OnInit {
     // createPost() {
     //     this.post = {
     //         id: 19,
-    //         title: 'toa2nsssssssddsssssssssssssssss',
+    //         title: 'toan,
     //         publishedStatus: true,
     //         publishTime: 1589989875000,
     //         createdAt: 1589989886000,

@@ -3,6 +3,7 @@ import {UserPost} from './UserPost';
 import {CategoryEntity} from './CategoryEntity';
 import {PostLikes} from './PostLikes';
 import {TagEntity} from './TagEntity';
+import {Media} from "./Media";
 
 export interface Post {
     id?: number,
@@ -16,5 +17,6 @@ export interface Post {
     userByUserId?: UserPost,
     categoryEntityList?: CategoryEntity[],
     tagEntityList?: TagEntity[],
-    postLikesById?: PostLikes[]
+    postLikesById?: PostLikes[],
+    mediaList?: Media[];
 }

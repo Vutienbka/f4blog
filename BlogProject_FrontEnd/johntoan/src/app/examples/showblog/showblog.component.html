@@ -6,20 +6,35 @@
     <div class="section profile-content">
         <div class="container">
             <div class="owner">
+<!--                <div class="avatar">-->
+<!--                    <img src="./assets/img/faces/joe-gardner-2.jpg" alt="Circle Image"-->
+<!--                         class="img-circle img-no-padding img-responsive">-->
+<!--                </div>-->
                 <div class="avatar">
-                    <img src="./assets/img/faces/joe-gardner-2.jpg" alt="Circle Image"
+                    <img src="{{post.userByUserId.srcAvatar}}" alt="Circle Image"
                          class="img-circle img-no-padding img-responsive">
                 </div>
                 <div class="name">
                     <h2 class="title">{{post.title}}<br/></h2>
                     <h5 class="description">{{post.userByUserId.userName}}</h5>
                 </div>
+                <div [innerHtml] ="post.content"></div>
             </div>
+<!--            <ckeditor name="content"-->
+<!--                      [editor]="Editor"-->
+<!--                      data=""-->
+<!--                      (ready)="onReady($event)"-->
+<!--                      [(ngModel)]="this.post.content">-->
+<!--            </ckeditor>-->
+            <script>
+
+            </script>
             <div class="row">
 
-                    <h5>{{post.content}}</h5>
                     <br/>
                 <div class="col-md-6 ml-auto mr-auto text-center">
+                    <button class="btn btn-info btn-round" (click)="editPost(post)"> Edit</button>
+                    <button class="btn btn btn-info btn-round"> Publish</button>
                     <button class="btn btn-info btn-round"> Like</button>
                     <button class="btn btn btn-info btn-round"> Share</button>
                 </div>
