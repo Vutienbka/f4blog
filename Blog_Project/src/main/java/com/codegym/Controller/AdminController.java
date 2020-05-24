@@ -14,7 +14,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
-
 @CrossOrigin("*")
 @RestController
 @RequestMapping(value = {"/api"})

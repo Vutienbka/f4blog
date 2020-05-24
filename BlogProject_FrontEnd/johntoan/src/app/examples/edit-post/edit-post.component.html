@@ -14,12 +14,10 @@
                     <div class="col-sm-12">
                         <label  class="control-label required" style="color: white; font-size: 17px">Content</label>
                         <ckeditor id = "editor1"  [editor]="Editor"
-                                  (change)="viewChangeOfPost($event)" formControlName="content" style="color: white"
-                        [(ngModel)]="post.content">
+                                  (change)="viewChangeOfPost($event)" formControlName="content"
+                                  [(ngModel)]="post.content">
 
                         </ckeditor>
-                        <!--                        <textarea id="content" class="form-control" formControlName="content" style="height: 300px">-->
-                        <!--                Enter text here...</textarea>-->
                     </div>
 
                 </div>

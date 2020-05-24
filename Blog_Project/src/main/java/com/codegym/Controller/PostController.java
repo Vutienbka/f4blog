@@ -118,7 +118,6 @@ public class PostController {
         }else {
             return  new ResponseEntity<Response>(new Response("Not found user for add Post"), HttpStatus.BAD_REQUEST);
         }
-
     }
 
         //------------------- Update

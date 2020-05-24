@@ -2,7 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {PostService} from "../../service/post.service";
 import {Router} from "@angular/router";
-import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import {ChangeEvent} from "@ckeditor/ckeditor5-angular";
 import * as DecoupledEditor from '@ckeditor/ckeditor5-build-decoupled-document';
 
