@@ -1,6 +1,6 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {FormArray, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {RouterModule} from '@angular/router';
 import {AppRoutingModule} from './app.routing';
@@ -21,7 +21,7 @@ import {MediaService} from "./service/media.service";
         AppComponent,
         NavbarComponent,
         FooterComponent,
-        DashboardComponent,
+        DashboardComponent
     ],
     imports: [
         AppRoutingModule,
@@ -34,6 +34,7 @@ import {MediaService} from "./service/media.service";
         HttpClientModule,
         ReactiveFormsModule,
         CKEditorModule
+
     ],
     providers: [{ provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true }, PostService,MediaService],
     bootstrap: [AppComponent]

@@ -11,9 +11,9 @@ import {RoleEntity} from "../examples/model/RoleEntity";
   providedIn: 'root'
 })
 export class UserService {
-  urlGetProfile: string = "http://localhost:8080/Gradle___org_example___Blog_Project_1_0_SNAPSHOT_war/api/getprofile/";
-  urlLogin: string = "http://localhost:8080/Gradle___org_example___Blog_Project_1_0_SNAPSHOT_war/login";
-  urlRegister: string = "http://localhost:8080/Gradle___org_example___Blog_Project_1_0_SNAPSHOT_war/api/adduser";
+  urlGetProfile: string = "http://localhost:8080/api/getprofile/";
+  urlLogin: string = "http://localhost:8080/login";
+  urlRegister: string = "http://localhost:8080/api/adduser";
   private users: BehaviorSubject<UserJwt[]> = new BehaviorSubject([]);
   private user: BehaviorSubject<UserJwt> = new BehaviorSubject<UserJwt>(new class implements UserJwt {
     id: string;

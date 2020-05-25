@@ -53,6 +53,7 @@ export class CreatePostComponent implements OnInit {
         }, (err) => {
             console.log(err, 'error reached');
         });
+        this.router.navigate(['home']);
     }
 
     saveContentOfPost( { editor }: ChangeEvent ) {

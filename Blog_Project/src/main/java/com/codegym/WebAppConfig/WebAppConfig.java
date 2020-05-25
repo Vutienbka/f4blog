@@ -94,7 +94,6 @@ public class WebAppConfig extends WebMvcConfigurerAdapter implements Application
         return new MediaService();
     }
 
-
     @Bean
     public IUserRepoHQL userRepo() {
         return new UserRepo();

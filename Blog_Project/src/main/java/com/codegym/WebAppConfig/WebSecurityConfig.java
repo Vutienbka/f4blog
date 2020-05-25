@@ -52,7 +52,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         characterEncodingFilter.setForceEncoding(true);
         http.addFilterBefore(characterEncodingFilter, CsrfFilter.class);
         http.csrf().ignoringAntMatchers("/**");
-        http.authorizeRequests().antMatchers( "/","/api/login").permitAll()
+        http.authorizeRequests().antMatchers( "/","/login").permitAll()
                 .and()
 //                .authorizeRequests().antMatchers(HttpMethod.GET,"/api/*").hasRole("USER")
 //                .and()

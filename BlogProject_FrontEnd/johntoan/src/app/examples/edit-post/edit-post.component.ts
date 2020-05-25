@@ -23,7 +23,6 @@ export class EditPostComponent implements OnInit {
   selectedFiles: File[] = [];
   fileUrl:string;
 
-
   private post: Post = new class implements Post {
     categoryEntityList: CategoryEntity[];
     commentsById: CommentPost[];
@@ -38,14 +37,12 @@ export class EditPostComponent implements OnInit {
     updatedAt: number;
     userByUserId: UserPost;
   };
-
   constructor(private postService: PostService,
               private route:ActivatedRoute,
               private router: Router,
               private httpClient:HttpClient,
               private formBuilder:FormBuilder) {
   }
-
   private id:number;
   ngOnInit(): void {
     this.route.paramMap.subscribe(param => {
@@ -63,9 +60,9 @@ export class EditPostComponent implements OnInit {
       content: new FormControl('',[Validators.required]),
     });
   }
-
   onSelectFile(event){
     this.selectedFiles = event.target.files;
+    console.log(this.selectedFiles);
     for (let i=0; i<this.selectedFiles.length ; i++){
       this.selectedFiles.push(event.target.files[i]);
     }
@@ -75,6 +72,7 @@ export class EditPostComponent implements OnInit {
     let formData = new FormData();
     formData.append('title', post.title);
     formData.append('content', post.content);
+    console.log(this.selectedFiles);
     if (this.selectedFiles.length > 0) {
       for (let row of this.selectedFiles) {
         formData.append('file[]', row);
@@ -101,13 +99,14 @@ export class EditPostComponent implements OnInit {
 
   reset(){}
   displayFieldCss(field:string){}
-  onChange(media, event){
-    const mediaFormArray = <FormArray> this.postForm.controls.medias;
-    if(event.target.checked){
-      mediaFormArray.push(new FormControl(media));
-    }else {
-      let index = mediaFormArray.controls.findIndex(element => element.value == media);
-      mediaFormArray.removeAt(index);
-    }
-  }
+
+  // onChange(media, event){
+  //   const mediaFormArray = <FormArray> this.postForm.controls.medias;
+  //   if(event.target.checked){
+  //     mediaFormArray.push(new FormControl(media));
+  //   }else {
+  //     let index = mediaFormArray.controls.findIndex(element => element.value == media);
+  //     mediaFormArray.removeAt(index);
+  //   }
+  // }
 }

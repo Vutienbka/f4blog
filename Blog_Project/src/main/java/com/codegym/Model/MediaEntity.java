@@ -33,7 +33,7 @@ public class MediaEntity {
     }
 
     @Basic
-    @Column(name = "srcMedia")
+    @Column(name = "srcMedia", length = 1000)
     public String getSrcMedia() {
         return srcMedia;
     }

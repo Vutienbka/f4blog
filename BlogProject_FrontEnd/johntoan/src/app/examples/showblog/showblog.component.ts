@@ -21,7 +21,8 @@ export class ShowblogComponent implements OnInit {
 
     postList: Post[]=[];
     commentForm:any = FormGroup;
-    time:any;
+    createdAt:any;
+    updatedAt:any;
     public Editor = DecoupledEditor;
 
     private post: Post = new class implements Post {
@@ -54,6 +55,7 @@ export class ShowblogComponent implements OnInit {
     private id:number;
     ngOnInit(): void {
         this.route.paramMap.subscribe(param => {
+            //Xu ly refresh page du lieu bi mat
             this.id = +param.get('id');
             this.post = this.postService.getOnePost(this.id);
             if(this.post===undefined){
@@ -61,22 +63,36 @@ export class ShowblogComponent implements OnInit {
                     this.postService.postList = resJson;
                     this.post = this.postService.getOnePost(this.id);
                     console.log(this.post);
-                    this.time=this.postService.timeConverter(this.post.createdAt);
+                    this.createdAt=this.postService.timeConverter(this.post.createdAt);
+                    this.updatedAt=this.postService.timeConverter(this.post.updatedAt);
                 });
             }
+            //Xu ly hien time sau khi back page
+            this.createdAt=this.postService.timeConverter(this.post.createdAt);
+            this.updatedAt=this.postService.timeConverter(this.post.updatedAt);
         });
 
         this.commentForm = this.formBuilder.group({
             content: new FormControl('',[Validators.required])
         });
-
     }
 
     editPost(post:Post){
         this.router.navigate(['editPost',post.id]);
     }
 
+    deletePost(post:Post){
+        alert("Do you want to delete this Post?")
+        console.log("postId"+ post.id);
+        this.postService.deletePost(post.id).subscribe(result => {
+            console.log("delete successfully");
+            this.postService.getAllPost();
+        }, error => {
+            console.log("delete not successfully");
+        });
 
+        this.router.navigate(['home']);
+    }
     viewChangeOfContentOfComment({ editor }: ChangeEvent){
 
         const data = editor.getData();
