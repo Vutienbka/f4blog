@@ -36,6 +36,7 @@ export class LandingComponent implements OnInit {
     getAllPost(){
         this.postService.fetchAllPostFromAPI().subscribe((resJson) => {
             this.listPost = resJson;
+            console.log(this.listPost);
         });
     }
 
