@@ -39,10 +39,13 @@ public class PostEntity {
     private Set<TagEntity> tagEntityList;
     @OneToMany(mappedBy = "postByPostId", fetch = FetchType.EAGER)
     private Set<PostLikeEntity> postLikesById;
+<<<<<<< HEAD
 
     @Column(name = "postImage")
     private String postImage;
 
+=======
+>>>>>>> bb4b69a73068147df2e032653d40ebf7ce8902c3
     public PostEntity() {
     }
 
