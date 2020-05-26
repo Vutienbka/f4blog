@@ -4,6 +4,9 @@ import {PostService} from "../../service/post.service";
 import {Router} from "@angular/router";
 import {ChangeEvent} from "@ckeditor/ckeditor5-angular";
 import * as DecoupledEditor from '@ckeditor/ckeditor5-build-decoupled-document';
+import {UserService} from "../../service/user.service";
+import {UserPost} from "../model/UserPost";
+import {RoleEntity} from "../model/RoleEntity";
 
 
 @Component({
@@ -18,9 +21,25 @@ export class CreatePostComponent implements OnInit {
     postForm:any = FormGroup;
     selectedFiles: File[] = [];
     fileUrl:string;
+    userList:UserPost[];
+    user:UserPost = new class implements UserPost {
+        email: string;
+        firstName: string;
+        id: number;
+        lastLogin: number;
+        lastName: string;
+        mobile: string;
+        password: string;
+        registeredAt: number;
+        roleEntityList: RoleEntity[];
+        srcAvatar: string;
+        userName: string;
+    };
+    userName:string;
     constructor(private formBuilder:FormBuilder,
                 private postService: PostService,
-                private router:Router) {
+                private router:Router,
+                private userService:UserService) {
     }
     ngOnInit(): void {
         this.postForm = this.formBuilder.group({
@@ -29,13 +48,18 @@ export class CreatePostComponent implements OnInit {
         });
     }
 
+
     onSelectFile(event){
         this.selectedFiles = event.target.files;
         for (let i=0; i<this.selectedFiles.length ; i++){
             this.selectedFiles.push(event.target.files[i]);
         }
     }
+
     onSubmit(submitForm: FormGroup) {
+        this.getCurrentUser();
+        console.log("da lay duoc user id" + this.user.id);
+
         let post = submitForm.value;
         console.log(post);
         let formData = new FormData();
@@ -46,6 +70,7 @@ export class CreatePostComponent implements OnInit {
                 formData.append('file[]', row);
             }
         }
+        formData.append('userId',this.user.id.toString())
 
         console.log(formData);
         this.postService.savePost(formData).subscribe((response) => {
@@ -65,9 +90,27 @@ export class CreatePostComponent implements OnInit {
             editor.ui.view.toolbar.element,
             editor.ui.getEditableElement()
         );
+
+    }
+    getCurrentUser(){
+        this.userService.fetchAllUserFromAPI().subscribe(result =>{
+            this.userList = result;
+            for (let row of result){
+                console.log(row.id + row.userName)
+            }
+        })
+        this.userName = localStorage.getItem('currentUserName');
+        const user:UserPost = this.userService.getOneUser(this.userName,this.userList);
+        this.user.id = user.id;
+        console.log("id da daly duoc" + this.user.id);
+        this.user.userName = user.userName;
     }
 
-    reset(){}
+    reset(){
+        this.getCurrentUser();
+        console.log("lay thong tin user hien tai:" + this.getCurrentUser());
+    }
+
     displayFieldCss(field:string){}
     onChange(media, event){
         const mediaFormArray = <FormArray> this.postForm.controls.medias;

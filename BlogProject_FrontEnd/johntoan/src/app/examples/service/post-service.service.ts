@@ -12,6 +12,8 @@ import {UserPost} from '../model/UserPost';
     providedIn: 'root'
 })
 export class PostServiceService {
+    urlGetPostByUser: string = "";
+    posts: BehaviorSubject<Post[]> = new BehaviorSubject<Post[]>([]);
     post: BehaviorSubject<Post> = new BehaviorSubject<Post>(new class implements Post {
         categoryEntityList: CategoryEntity[];
         commentsById: CommentPost[];
@@ -38,4 +40,7 @@ export class PostServiceService {
         this.post.next(post2);
     }
 
+    getAllPostByUser() {
+
+    }
 }

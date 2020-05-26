@@ -23,16 +23,22 @@ public class JwtFilter extends OncePerRequestFilter {
     IUserService userService;
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        try { String bearerToken = request.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+        try { String bearerToken = request.getHeader("authorization");
+            System.out.println(bearerToken);
+        if (bearerToken.startsWith("Bearer ")) {
             String token = bearerToken.substring(7);
-            String userName = this.jwtService.getUserName(request.getHeader(token));
+            System.out.println(token);
+            String userName = this.jwtService.getUserName(token);
+            System.out.println("thanh cong");
             UserDetails userDetails = userService.loadUserByUsername(userName);
+            System.out.println(userName);
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
         }
         } catch (Exception e) {
+            System.out.println("test filter");
             logger.error("Can not set User authentication -> Message{}",e);
         }
         filterChain.doFilter(request,response);

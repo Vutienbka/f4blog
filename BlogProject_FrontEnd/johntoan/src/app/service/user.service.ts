@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {BehaviorSubject, Observable} from "rxjs";
 import {UserJwt} from "../examples/model/UserJwt";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {Router} from "@angular/router";
 import {stringify} from "querystring";
 import {UserPost} from "../examples/model/UserPost";
@@ -14,6 +14,9 @@ export class UserService {
   urlGetProfile: string = "http://localhost:8080/api/getprofile/";
   urlLogin: string = "http://localhost:8080/login";
   urlRegister: string = "http://localhost:8080/api/adduser";
+
+  userList:UserPost[]=[];
+
   private users: BehaviorSubject<UserJwt[]> = new BehaviorSubject([]);
   private user: BehaviorSubject<UserJwt> = new BehaviorSubject<UserJwt>(new class implements UserJwt {
     id: string;
@@ -37,18 +40,18 @@ export class UserService {
     userName: string;
   });
   private message: BehaviorSubject<string> = new BehaviorSubject<string>("");
-
   constructor(private httpClient: HttpClient,private router: Router) {
-
+    this.getAllUser();
   }
 
   logout() {
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('currentUserName');
+    this.router.navigate(["/"]);
   }
 
   getUserInfor() {
    var userName: string = localStorage.getItem('currentUserName');
-    alert(userName);
     this.httpClient.get(this.urlGetProfile+userName).subscribe(u => this.userProfile.next(u))
   }
 
@@ -79,7 +82,7 @@ export class UserService {
         return "wrong password or username";}
     if (s=="404"){
         return "dont have this acction link";}else {
-      return "down serve backend";
+      return "can't connect to server";
     }
 
   }
@@ -88,15 +91,15 @@ export class UserService {
     this.message.next("");
 
     this.httpClient.post(this.urlRegister, user).subscribe(
-        result => {
-          console.log(result);
+        (result) => {
           this.login(user.userName, user.password);
-        },
-            error => {
-          alert(user.userName);
-              console.log(error);
-            });
+        },((error: HttpErrorResponse) => {
+          console.log(error);
+          console.log(error.error.text)
+          this.message.next(error.error.text);
+        }));
   }
+
   createUserCatch(s: string): string {
     if (s=="403"){
       return "wrong password or username";}
@@ -104,10 +107,24 @@ export class UserService {
       return "dont have this acction link";}else {
       return "down serve backend";
     }
-
   }
-
+  private baseUrl: string = 'http://localhost:8080/';
   getCurrentUserValue(): UserJwt {
     return this.user.value
+  }
+  fetchAllUserFromAPI(){
+    return this.httpClient.get<UserPost[]>(this.baseUrl +'getAllUsers');
+  }
+  getAllUser(){
+    this.fetchAllUserFromAPI().subscribe((resJson) => {
+      this.userList = resJson;
+    });
+  }
+  getOneUser(userName: string, userList: UserPost[]):UserPost{
+    return userList.find(e => (e.userName === userName));
+  }
+
+  getUserWroteCurrentPost(postId:number){
+    return this.httpClient.get<UserPost>(this.baseUrl + 'getUserWroteCurrentPost/'+postId);
   }
 }

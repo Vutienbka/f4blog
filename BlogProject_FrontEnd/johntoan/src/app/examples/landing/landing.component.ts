@@ -15,6 +15,7 @@ import {MediaService} from "../../service/media.service";
 })
 
 export class LandingComponent implements OnInit {
+    p: number = 1;
     listPost: Post[]=[];
     mediaList:Media[] = [];
     focus: any;

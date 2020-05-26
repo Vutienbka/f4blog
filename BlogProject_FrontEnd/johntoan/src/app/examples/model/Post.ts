@@ -20,4 +20,5 @@ export interface Post {
     postLikesById?: PostLikes[],
     mediaList?: Media[];
     postImage?:string;
+    userId?:number;
 }

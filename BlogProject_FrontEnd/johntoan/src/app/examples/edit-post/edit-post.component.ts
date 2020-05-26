@@ -16,8 +16,8 @@ import {ChangeEvent} from "@ckeditor/ckeditor5-angular";
   templateUrl: './edit-post.component.html',
   styleUrls: ['./edit-post.component.css']
 })
-export class EditPostComponent implements OnInit {
 
+export class EditPostComponent implements OnInit {
   public Editor = DecoupledEditor;
   postForm:any = FormGroup;
   selectedFiles: File[] = [];
@@ -43,6 +43,7 @@ export class EditPostComponent implements OnInit {
               private httpClient:HttpClient,
               private formBuilder:FormBuilder) {
   }
+
   private id:number;
   ngOnInit(): void {
     this.route.paramMap.subscribe(param => {
@@ -55,24 +56,27 @@ export class EditPostComponent implements OnInit {
         });
       }
     });
+
     this.postForm = this.formBuilder.group({
       title: new FormControl ('',[Validators.required]),
       content: new FormControl('',[Validators.required]),
     });
   }
+
   onSelectFile(event){
     this.selectedFiles = event.target.files;
-    console.log(this.selectedFiles);
+    // console.log(this.selectedFiles);
     for (let i=0; i<this.selectedFiles.length ; i++){
       this.selectedFiles.push(event.target.files[i]);
     }
   }
+
   onSavePost(submitForm: FormGroup) {
     let post = submitForm.value;
     let formData = new FormData();
     formData.append('title', post.title);
     formData.append('content', post.content);
-    console.log(this.selectedFiles);
+    // console.log(this.selectedFiles);
     if (this.selectedFiles.length > 0) {
       for (let row of this.selectedFiles) {
         formData.append('file[]', row);
@@ -81,10 +85,26 @@ export class EditPostComponent implements OnInit {
     console.log(formData);
     this.postService.updateAfterEdit(formData,this.id).subscribe((response) => {
       console.log(response);
+      this.postService.getAllPost();
+      this.router.navigate(['showblog/',this.id]);
+      let result = confirm("Edited successful. Do you want to leave?");
+      if (result == true) {
+        this.postService.getOnePost(this.id);
+        alert("Thank you for your access!");
+        this.router.navigate(['showblog/',this.id]);
+      }
+      else {
+        this.postService.getOnePost(this.id);
+        alert("Thank you for staying on page");
+        this.router.navigate(['editPost/',this.id]);
+      }
     }, (err) => {
       console.log(err, 'error reached');
+      this.postService.getOnePost(this.id);
+      this.router.navigate(['showblog/',this.id]);
+      alert("Not Edited successful");
     });
-    this.router.navigate(['home']);
+
   }
 
   viewChangeOfPost( { editor }: ChangeEvent ) {
@@ -99,7 +119,6 @@ export class EditPostComponent implements OnInit {
 
   reset(){}
   displayFieldCss(field:string){}
-
   // onChange(media, event){
   //   const mediaFormArray = <FormArray> this.postForm.controls.medias;
   //   if(event.target.checked){
@@ -109,4 +128,5 @@ export class EditPostComponent implements OnInit {
   //     mediaFormArray.removeAt(index);
   //   }
   // }
+
 }

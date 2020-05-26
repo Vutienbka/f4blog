@@ -1,5 +1,6 @@
 package com.codegym.Service.impl;
 
+import com.codegym.Model.PostEntity;
 import com.codegym.Model.RoleEntity;
 import com.codegym.Model.UserEntity;
 import com.codegym.Repository.IUserRepo;
@@ -56,8 +57,17 @@ public class UserService implements IUserService {
     }
 
     @Override
+
+    public UserEntity findByEmail(String email) {
+        return this.userRepoHQL.findByEmail(email);}
+
     public UserEntity findById(Long id) {
         return userRepo.findOne(id);
+    }
+
+    @Override
+    public List<PostEntity> findPostByUser(Long id) {
+        return userRepoHQL.findPostByUser(id);
     }
 
     @Override

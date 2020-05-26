@@ -15,6 +15,7 @@ import {InterceptorService} from "./service/interceptor.service";
 import {PostService} from "./service/post.service";
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 import {MediaService} from "./service/media.service";
+import {NgxPaginationModule} from "ngx-pagination";
 
 @NgModule({
     declarations: [
@@ -33,7 +34,8 @@ import {MediaService} from "./service/media.service";
         AppRoutingModule,
         HttpClientModule,
         ReactiveFormsModule,
-        CKEditorModule
+        CKEditorModule,
+        NgxPaginationModule
 
     ],
     providers: [{ provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true }, PostService,MediaService],

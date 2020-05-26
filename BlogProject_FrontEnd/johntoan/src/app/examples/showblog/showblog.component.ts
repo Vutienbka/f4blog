@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {PostServiceService} from '../service/post-service.service';
 import {Post} from '../model/Post';
 import {UserPost} from '../model/UserPost';
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, NavigationEnd, Router, RouterEvent} from "@angular/router";
 import {CategoryEntity} from "../model/CategoryEntity";
 import {CommentPost} from "../model/CommentPost";
 import {PostLikes} from "../model/PostLikes";
@@ -12,6 +12,9 @@ import {HttpClient} from "@angular/common/http";
 import * as DecoupledEditor from '@ckeditor/ckeditor5-build-decoupled-document';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {ChangeEvent} from "@ckeditor/ckeditor5-angular";
+import {UserService} from "../../service/user.service";
+import {filter, takeUntil} from "rxjs/operators";
+import {Subject} from "rxjs";
 @Component({
     selector: 'app-showblog',
     templateUrl: './showblog.component.html',
@@ -20,9 +23,11 @@ import {ChangeEvent} from "@ckeditor/ckeditor5-angular";
 export class ShowblogComponent implements OnInit {
 
     postList: Post[]=[];
+    userName:string;
     commentForm:any = FormGroup;
     createdAt:any;
     updatedAt:any;
+    userNameOfUserWroteCurrentPost:string;
     public Editor = DecoupledEditor;
 
     private post: Post = new class implements Post {
@@ -44,16 +49,18 @@ export class ShowblogComponent implements OnInit {
         content: string;
         id: number;
     }
-
     constructor(private postService: PostService,
                 private route:ActivatedRoute,
                 private router: Router,
                 private httpClient:HttpClient,
-                private formBuilder: FormBuilder) {
+                private formBuilder: FormBuilder,
+                private userService:UserService) {
     }
 
     private id:number;
     ngOnInit(): void {
+        //Lay thong tin user dang dang nhap de hien thi hay nut edit va delete khi xem chi tiet bai viet
+        this.userName=localStorage.getItem('currentUserName');
         this.route.paramMap.subscribe(param => {
             //Xu ly refresh page du lieu bi mat
             this.id = +param.get('id');
@@ -70,11 +77,14 @@ export class ShowblogComponent implements OnInit {
             //Xu ly hien time sau khi back page
             this.createdAt=this.postService.timeConverter(this.post.createdAt);
             this.updatedAt=this.postService.timeConverter(this.post.updatedAt);
+            console.log(this.post.updatedAt);
         });
 
         this.commentForm = this.formBuilder.group({
             content: new FormControl('',[Validators.required])
         });
+
+        this.getUserWroteCurrentPost();
     }
 
     editPost(post:Post){
@@ -90,6 +100,8 @@ export class ShowblogComponent implements OnInit {
         }, error => {
             console.log("delete not successfully");
         });
+//Cap nhat lai list of post sau khi sua
+        this.postService.getAllPost();
 
         this.router.navigate(['home']);
     }
@@ -104,8 +116,12 @@ export class ShowblogComponent implements OnInit {
         );
     }
     sendComment(commentForm: FormGroup){
-
     }
 
-
+    getUserWroteCurrentPost() {
+        this.userService.getUserWroteCurrentPost(this.id).subscribe(result=>{
+            this.userNameOfUserWroteCurrentPost = result.userName;
+            console.log("Da ly duoc user viet post nat" + this.userNameOfUserWroteCurrentPost);
+        })
+    }
 }

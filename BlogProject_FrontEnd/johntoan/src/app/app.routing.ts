@@ -18,6 +18,8 @@ import {EditPostComponent} from "./examples/edit-post/edit-post.component";
 const routes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
     { path: 'home',             component: LandingComponent },
+    // { path: 'profile/:id',     component: ProfileComponent,canActivate: [AuthGuard]},
+    { path: 'profile/:id',     component: ProfileComponent},
     { path: 'profile',     component: ProfileComponent,canActivate: [AuthGuard]},
     { path: 'login',           component: SigninComponent },
     { path: 'landing',          component: LandingComponent},
@@ -25,7 +27,7 @@ const routes: Routes = [
     { path: 'showblog/:id',          component: ShowblogComponent},
     { path: 'index',          component: IndexUserComponent },
     { path: 'aboutme',          component: AboutmeComponent,canActivate: [AuthGuard]},
-    { path: 'createPost',          component: CreatePostComponent },
+    { path: 'createPost',          component: CreatePostComponent,canActivate: [AuthGuard] },
     { path: 'editPost/:id',          component: EditPostComponent }
 
 ];
@@ -34,8 +36,8 @@ const routes: Routes = [
   imports: [
     CommonModule,
     BrowserModule,
-    RouterModule.forRoot(routes,{
-      useHash: true
+    RouterModule.forRoot(routes, {
+        onSameUrlNavigation: 'reload'
     })
   ],
   exports: [
