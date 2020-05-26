@@ -81,7 +81,6 @@ public class PostController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         Long currentUserId = Long.parseLong(userId);
         UserEntity user = userService.findById(currentUserId);
         user.setCommentsById(null);
