@@ -56,6 +56,7 @@ export class EditPostComponent implements OnInit {
         });
       }
     });
+
     this.postForm = this.formBuilder.group({
       title: new FormControl ('',[Validators.required]),
       content: new FormControl('',[Validators.required]),
@@ -84,11 +85,26 @@ export class EditPostComponent implements OnInit {
     console.log(formData);
     this.postService.updateAfterEdit(formData,this.id).subscribe((response) => {
       console.log(response);
+      this.postService.getAllPost();
+      this.router.navigate(['showblog/',this.id]);
+      let result = confirm("Edited successful. Do you want to leave?");
+      if (result == true) {
+        this.postService.getOnePost(this.id);
+        alert("Thank you for your access!");
+        this.router.navigate(['showblog/',this.id]);
+      }
+      else {
+        this.postService.getOnePost(this.id);
+        alert("Thank you for staying on page");
+        this.router.navigate(['editPost/',this.id]);
+      }
     }, (err) => {
       console.log(err, 'error reached');
+      this.postService.getOnePost(this.id);
+      this.router.navigate(['showblog/',this.id]);
+      alert("Not Edited successful");
     });
-    this.postService.getAllPost();
-    this.router.navigate(['home']);
+
   }
 
   viewChangeOfPost( { editor }: ChangeEvent ) {
@@ -103,7 +119,6 @@ export class EditPostComponent implements OnInit {
 
   reset(){}
   displayFieldCss(field:string){}
-
   // onChange(media, event){
   //   const mediaFormArray = <FormArray> this.postForm.controls.medias;
   //   if(event.target.checked){
@@ -113,4 +128,5 @@ export class EditPostComponent implements OnInit {
   //     mediaFormArray.removeAt(index);
   //   }
   // }
+
 }

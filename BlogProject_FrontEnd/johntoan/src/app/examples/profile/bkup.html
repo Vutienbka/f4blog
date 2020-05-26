@@ -1,0 +1,108 @@
+<div class="wrapper">
+    <div class="page-header page-header-xs" data-parallax="true"
+         style="background-image: url('./assets/img/fabio-mangione.jpg');height: 15px">
+        <!--        <div class="filter"></div>-->
+
+
+    </div>
+    <div class="section profile-content" >
+        <div class="container">
+            <div class="row">
+                <div style="position: absolute;left: 150px" class="col-md-2">
+                    <div class="owner">
+                        <div class="avatar" >
+                            <img src="./assets/img/faces/joe-gardner-2.jpg" alt="Circle Image"
+                                 class="img-circle img-no-padding img-responsive shadow">
+                        </div>
+                        <div style="position: absolute;top: -30px" class="">
+                            <h2 class="title">{{userProfile.userName}}<br/></h2>
+                            <h5 class="description">Music Producer</h5>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 ml-auto mr-auto text-center">
+                            <h5><span>{{userProfile.firstName}}</span></h5>
+                            <h5>Email: bobontre@gmail.com <span>{{userProfile.email}}</span></h5>
+                            <h5>Phone: <span>{{userProfile.mobile}}</span></h5>
+                            <h5>Avatar: <span>{{userProfile.srcAvatar}}</span></h5>
+                            <h5>Create date: <span>{{userProfile.registeredAt}}</span></h5>
+                            <br/>
+                            <button class="btn btn-info btn-round"> Like</button>
+                            <button class="btn btn btn-info btn-round"> Share</button>
+                        </div>
+                    </div>
+                </div>
+                <div style="position: relative;left: 350px" class="col-md-10">
+                    test
+                </div>
+            </div>
+            <!--            <br/>-->
+            <div class="nav-tabs-navigation" style="position: relative">
+                <div class="nav-tabs-wrapper">
+                    <ngb-tabset [justify]="'center'">
+                        <ngb-tab title="Comment">
+                            <ng-template ngbTabContent>
+                                <div class="row following" id="follows">
+                                    <div class="col-md-6 ml-auto mr-auto">
+                                        <ul class="list-unstyled follows">
+                                            <li>
+                                                <div class="row">
+                                                    <div class="col-md-2 col-sm-2 ml-auto mr-auto">
+                                                        <img src="./assets/img/faces/clem-onojeghuo-2.jpg"
+                                                             alt="Circle Image"
+                                                             class="img-circle img-no-padding img-responsive">
+                                                    </div>
+                                                    <div class="col-md-7 col-sm-4 ml-auto">
+                                                        <h5>Flume<br/><small>Musical Producer ProducerProducerProducerProducer</small></h5>
+                                                    </div>
+                                                    <!--                                                    <div class="col-md-3 col-sm-2 ml-auto mr-auto">-->
+                                                    <!--                                                        <div class="form-check">-->
+                                                    <!--                                                            <label class="form-check-label">-->
+                                                    <!--                                                                <input class="form-check-input" type="checkbox" value=""-->
+                                                    <!--                                                                       checked="">-->
+                                                    <!--                                                                <span class="form-check-sign"></span>-->
+                                                    <!--                                                            </label>-->
+                                                    <!--                                                        </div>-->
+                                                    <!--                                                    </div>-->
+                                                </div>
+                                            </li>
+                                            <hr/>
+                                            <li>
+                                                <div class="row">
+                                                    <div class="col-md-2 col-sm-2 ml-auto mr-auto">
+                                                        <img src="./assets/img/faces/ayo-ogunseinde-2.jpg"
+                                                             alt="Circle Image"
+                                                             class="img-circle img-no-padding img-responsive">
+                                                    </div>
+                                                    <div class="col-md-7 col-sm-4 ml-auto">
+                                                        <h5>Banks<br/><small>Singer ProducerProducerProducerProducerProducer</small></h5>
+                                                    </div>
+                                                    <!--                                                    <div class="col-md-3 col-sm-2 ml-auto mr-auto">-->
+                                                    <!--                                                        <div class="form-check">-->
+                                                    <!--                                                            <label class="form-check-label">-->
+                                                    <!--                                                                <input class="form-check-input" type="checkbox" value=""-->
+                                                    <!--                                                                       checked="">-->
+                                                    <!--                                                                <span class="form-check-sign"></span>-->
+                                                    <!--                                                            </label>-->
+                                                    <!--                                                        </div>-->
+                                                    <!--                                                    </div>-->
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </ng-template>
+                        </ngb-tab>
+                        <!--                        <ngb-tab title="Following">-->
+                        <!--                            <ng-template ngbTabContent>-->
+                        <!--                                <h3 class="text-muted">Not following anyone yet :(</h3>-->
+                        <!--                                <br>-->
+                        <!--                                <button class="btn btn-warning btn-round">Find artists</button>-->
+                        <!--                            </ng-template>-->
+                        <!--                        </ngb-tab>-->
+                    </ngb-tabset>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

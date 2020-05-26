@@ -2,16 +2,17 @@
     <div class="container">
 
         <div *ngIf="isHome2()" class="navbar-translate">
-            <a class="navbar-brand" href="#">Profile</a>
-            <a class="navbar-brand" [routerLink]="['/createPost']">Add Blog</a>
-
+            <a class="navbar-brand" [routerLink]="['/']">HOME</a>
+            <a class="navbar-brand" [routerLink]="['/profile']">PROFILE</a>
+            <a class="navbar-brand" [routerLink]="['/createPost']">ADD BLOG</a>
         </div>
 
         <div *ngIf="!isHome2()" class="navbar-translate">
-            <a class="navbar-brand" href="#">HOME</a>
-            <a class="navbar-brand" href="#">LASTEST</a>
+            <a class="navbar-brand" [routerLink]="['/']">HOME</a>
+            <a class="navbar-brand" href="#">LATEST</a>
             <a class="navbar-brand" href="#">TREND</a>
-            <a class="navbar-brand" [routerLink]="['/aboutme']">ABOUT ME</a>
+            <a class="navbar-brand" [routerLink]="['/createPost']">ADD BLOG</a>
+            <a class="navbar-brand" [routerLink]="['/profile']">PROFILE</a>
         </div>
 
 

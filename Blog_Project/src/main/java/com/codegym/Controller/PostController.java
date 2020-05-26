@@ -7,12 +7,15 @@ import com.codegym.Model.UserEntity;
 import com.codegym.Service.IMediaService;
 import com.codegym.Service.IUserService;
 import com.codegym.Service.PostService;
+import com.mysql.cj.x.protobuf.MysqlxDatatypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,7 +47,7 @@ public class PostController {
     //--------------------------TIEN----------------------
     @RequestMapping(value = "/getAllUsers", method = RequestMethod.GET)
     public ResponseEntity<List<UserEntity>> listAllUsers() {
-        List<UserEntity> userList= userService.findAll();
+        List<UserEntity> userList = userService.findAll();
         if (userList.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
@@ -53,7 +56,7 @@ public class PostController {
 
     @RequestMapping(value = "/getAllMedias", method = RequestMethod.GET)
     public ResponseEntity<List<MediaEntity>> listAllMedias() {
-        List<MediaEntity> mediaEntities= mediaService.findAll();
+        List<MediaEntity> mediaEntities = mediaService.findAll();
         if (mediaEntities.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
@@ -72,10 +75,11 @@ public class PostController {
     @PostMapping(value = "/savePost", consumes = "multipart/form-data")
     @ResponseBody
     @ExceptionHandler(DataIntegrityViolationException.class)
+
     public ResponseEntity<Response> addPost(@RequestPart("file[]") MultipartFile[] file, @ModelAttribute PostEntity post, @ModelAttribute("userId") String userId) {
         try {
             if (file != null) {
-                for(int i = 0; i<file.length;i++)
+                for (int i = 0; i < file.length; i++)
                     System.out.println(file[i].getOriginalFilename());
             }
         } catch (Exception e) {
@@ -88,7 +92,7 @@ public class PostController {
         user.setPostsById(null);
         user.setPostLikesById(null);
 
-        if(user !=null) {
+        if (user != null) {
             Date currentDate = new Date();
             Timestamp currentTime = new Timestamp(currentDate.getTime());
             post.setCreatedAt(currentTime);
@@ -103,10 +107,10 @@ public class PostController {
                 ex.printStackTrace();
             }
 
-            PostEntity newPost = new PostEntity(post.getTitle(),post.getCreatedAt(), post.getContent(),srcPostImage,user);
+            PostEntity newPost = new PostEntity(post.getTitle(), post.getCreatedAt(), post.getContent(), srcPostImage, user);
             try {
                 postService.save(newPost);
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 //            List<MediaEntity> mediaList = new ArrayList<>();
@@ -135,18 +139,18 @@ public class PostController {
                 return new ResponseEntity<Response>(new Response("Post saved successfully"), HttpStatus.OK);
             } else
                 return new ResponseEntity<Response>(new Response("Post not saved"), HttpStatus.BAD_REQUEST);
-        }else {
-            return  new ResponseEntity<Response>(new Response("Not found user for add Post"), HttpStatus.BAD_REQUEST);
+        } else {
+            return new ResponseEntity<Response>(new Response("Not found user for add Post"), HttpStatus.BAD_REQUEST);
         }
     }
 
-        //------------------- Update
-    @RequestMapping(value = "/updatePost/{id}", method = RequestMethod.POST,consumes = "multipart/form-data")
+    //------------------- Update
+    @RequestMapping(value = "/updatePost/{id}", method = RequestMethod.POST, consumes = "multipart/form-data")
     @ResponseBody
     public ResponseEntity<PostEntity> updatePost(@PathVariable("id") Long postId, @RequestPart("file[]") MultipartFile[] file, @ModelAttribute PostEntity postEntity) {
         try {
             if (file != null) {
-                for(int i = 0; i<file.length;i++)
+                for (int i = 0; i < file.length; i++)
                     System.out.println(file[i].getOriginalFilename());
             }
         } catch (Exception e) {
@@ -159,12 +163,12 @@ public class PostController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        if(file.length>0) {
+        if (file.length > 0) {
             String postImageName = file[0].getOriginalFilename();
             String srcPostImage = "assets/ImageServer/" + postImageName;
-            if(srcPostImage!=null) {
+            if (srcPostImage != null) {
                 currentPostEntity.setPostImage(srcPostImage);
-            }else {
+            } else {
                 currentPostEntity.setPostImage(currentPostEntity.getPostImage());
             }
         }
@@ -176,8 +180,8 @@ public class PostController {
         currentPostEntity.setTitle(postEntity.getTitle());
 
 
-        if(currentPostEntity.getPublishedStatus()==1){
-        }else {
+        if (currentPostEntity.getPublishedStatus() == 1) {
+        } else {
             currentPostEntity.setPublishedStatus(postEntity.getPublishedStatus());
         }
         currentPostEntity.setPublishTime(postEntity.getPublishTime());
@@ -204,12 +208,38 @@ public class PostController {
     }
 
     //--------------------------TU----------------------
+    @GetMapping(value = "/getpostbyuser")
+    public ResponseEntity<List<PostEntity>> getPostByUser() {
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        Long id = this.userService.findByUserName(name).getId();
+        List<PostEntity> list = this.userService.findPostByUser(id);
+        return ResponseEntity.ok(list);
+    }
 
+    @GetMapping(value = "/getprivatepost/{id}")
+    public ResponseEntity<PostEntity> getPostPrivate(@PathVariable("id") Long id) {
+       PostEntity postEntity = this.postService.findById(id);
+       if (postEntity.getUserByUserId().getUserName() == SecurityContextHolder.getContext().getAuthentication().getName());
+
+       return null;
+    }
+
+    @GetMapping(value = "getUserWroteCurrentPost/{id}")
+    public ResponseEntity<UserEntity> getUserWroteCurrentPost(@PathVariable("id") Long postId){
+
+        PostEntity currentPost = this.postService.findById(postId);
+        Long uerIdOfUserWroteCurrentPost = currentPost.getUserByUserId().getId();
+        UserEntity userWroteCurrentPost = this.userService.findById(uerIdOfUserWroteCurrentPost);
+        if(userWroteCurrentPost!=null)
+        return new ResponseEntity<>(userWroteCurrentPost,HttpStatus.OK);
+        else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+//    @PostMapping()
     //--------------------------DUNG----------------------
 
 
     //-------------------Retrieve all
-//    @RequestMapping(value = "/getAllPosts/", method = RequestMethod.GET)
+//    @RequestMapping(value = "/getAllPosts/", met>>>>>>> 531852606de86e1d6e8e9b0c5274d413b2e21d49hod = RequestMethod.GET)
 //    public ResponseEntity<List<PostEntity>> listAllPosts() {
 //        List<PostEntity> postEntities = postService.findAll();
 //        if (postEntities.isEmpty()) {
