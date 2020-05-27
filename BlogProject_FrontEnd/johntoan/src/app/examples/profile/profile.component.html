@@ -6,29 +6,31 @@
     <div style="margin: 30px" class="row">
         <div style="margin: 20px" name="profile"  class="col-md-3 shadow">
             <div name="avatar">
-                <img width="50%" height="50%" src="./assets/img/faces/joe-gardner-2.jpg" alt="Circle Image"
+                <img width="50%" height="50%" src="{{userProfile.srcAvatar}}" alt="Circle Image"
                      class="img-circle img-no-padding img-responsive">
             </div>
             <div name="info">info
                 <h5><span>{{userProfile.firstName}}</span></h5>
-                <h5>Email: bobontre@gmail.com <span>{{userProfile.email}}</span></h5>
+                <h5><span>{{userProfile.email}}</span></h5>
                 <h5>Phone: <span>{{userProfile.mobile}}</span></h5>
-                <h5>Avatar: <span>{{userProfile.srcAvatar}}</span></h5>
-                <h5>Create date: <span>{{registeredAt}}</span></h5>
+<!--                <h5>Avatar: <span>{{userProfile.srcAvatar}}</span></h5>-->
+                <h5>Create date: <span>{{postService.timeConverter(registeredAt)}}</span></h5>
                 <br/>
             </div>
         </div>
         <div style="margin: 20px" name="listpost" class="col-md-8">
-            <div name="post" class="shadow row">
+            <h5>List post:</h5><br>
+            <div style="margin-bottom: 25px" name="post" class="shadow row" *ngFor="let post of posts; let i = index">
             <div name="post_img" class="p-0 m-0 nopadding" align="left">
-                <img class="nopadding" width="200px" height="150px" src="./assets/img/faces/joe-gardner-2.jpg">
+                <img class="nopadding" width="200px" height="150px" src="{{post.postImage}}">
             </div>
             <div name="post-info" class="col-md-7 nopadding" style="justify-content: start">
-                <h5><span>Title post: Bài viết 1</span></h5>
-                <h5><span>Category: Java </span></h5>
-                <h5><span>Intro: Giới thiệu bài viết tóm tắt ...</span></h5>
+                <h5><span>Title post: {{post.title}}</span></h5>
+                <h5><span>Category: {{post.categoryEntityList[0]}} </span></h5>
+                <h5><span>Create Date: {{this.postService.timeConverter(post.createdAt)}}</span></h5>
                 <div align="right">
-                    <button class="btn btn-info btn-round"> Enable</button>
+                    <button class="btn btn-info btn-round" *ngIf="post.publishedStatus==1" (click)="changeStatus(post)"> Enable</button>
+                    <button class="btn btn-info btn-round" *ngIf="post.publishedStatus==0" (click)="changeStatus(post)"> Disable</button>
                     <button class="btn btn btn-info btn-round"> Share</button>
                 </div>
             </div>

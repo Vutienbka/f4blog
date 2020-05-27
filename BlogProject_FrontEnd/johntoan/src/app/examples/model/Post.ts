@@ -8,7 +8,7 @@ import {Media} from "./Media";
 export interface Post {
     id?: number,
     title: string,
-    publishedStatus?: boolean,
+    publishedStatus?: number,
     publishTime?: number,
     createdAt?: number,
     updatedAt?: number,

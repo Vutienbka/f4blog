@@ -7,5 +7,4 @@ export interface UserJwt {
     avatar?: string;
     password?: string;
     email?: string;
-
 }

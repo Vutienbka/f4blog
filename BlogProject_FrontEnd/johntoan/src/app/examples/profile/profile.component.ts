@@ -4,6 +4,9 @@ import {UserPost} from "../model/UserPost";
 import {BehaviorSubject} from "rxjs";
 import {RoleEntity} from "../model/RoleEntity";
 import {ActivatedRoute, UrlSegment} from "@angular/router";
+import {PostServiceService} from "../service/post-service.service";
+import {Post} from "../model/Post";
+import {PostService} from "../../service/post.service";
 
 @Component({
     selector: 'app-profile',
@@ -12,6 +15,7 @@ import {ActivatedRoute, UrlSegment} from "@angular/router";
 })
 
 export class ProfileComponent implements OnInit {
+    posts:Post[]=[];
     userProfile: UserPost = new class implements UserPost {
         email: string ="";
         firstName: string="";
@@ -27,15 +31,29 @@ export class ProfileComponent implements OnInit {
     };
     registeredAt: string = "";
 
-    constructor(private userService: UserService,private activatedRoute: ActivatedRoute) {
-        this.activatedRoute.params.subscribe((b) => console.log(b['id']));
+    constructor(private userService: UserService,
+                private activatedRoute: ActivatedRoute,
+                private postServiceService:PostServiceService,
+                private postService:PostService)
+    {
+        this.activatedRoute.params.subscribe((b) => alert(b['id']));
     }
 
-    ngOnInit() {this.userService.getUserInfor();
+    ngOnInit() {
+        this.userService.getUserInfor();
         this.userService.userProfile.subscribe(b => {
             this.userProfile = b;
             this.registeredAt = new Date(this.userProfile.registeredAt).toString();
         });
+        this.postServiceService.getPostByUser().subscribe(u => this.posts = u);
     }
 
+    changeStatus(post: Post) {
+        if (post.publishedStatus == 0) {
+            post.publishedStatus = 1;
+        }else {
+            post.publishedStatus = 0;
+        }
+        this.postServiceService.savePost(post);
+    }
 }

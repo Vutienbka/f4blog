@@ -46,6 +46,7 @@ export class UserService {
 
   logout() {
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('token');
     localStorage.removeItem('currentUserName');
     this.router.navigate(["/"]);
   }
@@ -63,9 +64,11 @@ export class UserService {
     this.httpClient.post(this.urlLogin,user).subscribe( result => {
       this.user.next(result);
       this.message.next("success");
-      localStorage.setItem('currentUser', stringify(this.user.value));
+      localStorage.setItem('currentUser', stringify(this.user.getValue()));
       localStorage.setItem('currentUserName', this.user.value.userName);
       console.log(this.user.getValue());
+      localStorage.setItem('token', this.user.getValue().token);
+      console.log(localStorage.getItem('token').toString());
       this.router.navigate(["/"]);
     },error => {
        console.log(error.status)

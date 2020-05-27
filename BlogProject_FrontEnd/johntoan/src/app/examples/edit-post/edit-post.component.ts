@@ -31,7 +31,7 @@ export class EditPostComponent implements OnInit {
     id: number;
     postLikesById: PostLikes[];
     publishTime: number;
-    publishedStatus: boolean;
+    publishedStatus: number;
     tagEntityList: TagEntity[];
     title: string;
     updatedAt: number;
