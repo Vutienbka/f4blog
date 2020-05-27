@@ -98,22 +98,41 @@ public class PostController {
             Timestamp currentTime = new Timestamp(currentDate.getTime());
             post.setCreatedAt(currentTime);
 
-            String fileUpload = environment.getProperty("file_upload").toString();
-            String postImageName = file[0].getOriginalFilename();
-            String srcPostImage = "assets/ImageServer/" + postImageName;
+            if(file.length>0) {
+                String fileUpload = environment.getProperty("file_upload").toString();
+                String postImageName = file[0].getOriginalFilename();
+                String srcPostImage = "assets/ImageServer/" + postImageName;
+                try {
+                    FileCopyUtils.copy(file[0].getBytes(), new File(fileUpload + postImageName));
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                PostEntity newPost = new PostEntity(post.getTitle(), post.getCreatedAt(), post.getContent(), srcPostImage, user);
+                try {
+                    postService.save(newPost);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (newPost != null) {
+                    return new ResponseEntity<Response>(new Response("Post saved successfully"), HttpStatus.OK);
+                } else
+                    return new ResponseEntity<Response>(new Response("Post not saved"), HttpStatus.BAD_REQUEST);
+            }else {
+                PostEntity newPost = new PostEntity(post.getTitle(), post.getCreatedAt(), post.getContent(), null, user);
+                try {
+                    postService.save(newPost);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (newPost != null) {
+                    return new ResponseEntity<Response>(new Response("Post saved successfully"), HttpStatus.OK);
+                } else
+                    return new ResponseEntity<Response>(new Response("Post not saved"), HttpStatus.BAD_REQUEST);
+            }
             // Luu file len server
-            try {
-                FileCopyUtils.copy(file[0].getBytes(), new File(fileUpload + postImageName));
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
 
-            PostEntity newPost = new PostEntity(post.getTitle(), post.getCreatedAt(), post.getContent(), srcPostImage, user);
-            try {
-                postService.save(newPost);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+
+
 //            List<MediaEntity> mediaList = new ArrayList<>();
 //            for (int i = 0; i < file.length; i++) {
 //                String fileUpload = environment.getProperty("file_upload").toString();
@@ -136,10 +155,6 @@ public class PostController {
 //                    ex.printStackTrace();
 //                }
 //            }
-            if (newPost != null) {
-                return new ResponseEntity<Response>(new Response("Post saved successfully"), HttpStatus.OK);
-            } else
-                return new ResponseEntity<Response>(new Response("Post not saved"), HttpStatus.BAD_REQUEST);
         } else {
             return new ResponseEntity<Response>(new Response("Not found user for add Post"), HttpStatus.BAD_REQUEST);
         }
